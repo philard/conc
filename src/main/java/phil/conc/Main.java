@@ -18,10 +18,10 @@ class Main {
     static void one() {
         System.out.println("\n** ExecutorService::submit **");
         AtomicInteger atomicInt = new AtomicInteger(0);
+        ExecutorService es = Executors.newFixedThreadPool(2);
 
         List<Future> futures = new LinkedList<Future>();
-        ExecutorService es = Executors.newFixedThreadPool(2);
-        makeRunnables(atomicInt)
+        generateRunnables(atomicInt)
                 .forEach(runnable -> {
                     futures.add(es.submit(runnable));
                 });
@@ -53,7 +53,7 @@ class Main {
         AtomicInteger atomicInt = new AtomicInteger(0);
 
         ExecutorService es = Executors.newFixedThreadPool(2);
-        CompletableFuture<?>[] futures = makeRunnables(atomicInt).stream()
+        CompletableFuture<?>[] futures = generateRunnables(atomicInt).stream()
                 .map(task -> CompletableFuture.runAsync(task, es))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
@@ -68,7 +68,7 @@ class Main {
         return tasks;
     }
 
-    private static List<Runnable> makeRunnables(AtomicInteger atomicInt) {
+    private static List<Runnable> generateRunnables(AtomicInteger atomicInt) {
         Runnable addTask = () -> atomicInt.updateAndGet(n -> n + 2);
         List<Runnable> tasks =  Collections.nCopies(1000, addTask);
         return tasks;
