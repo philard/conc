@@ -41,7 +41,7 @@ class Main {
 
         ExecutorService es = Executors.newFixedThreadPool(2);
         try {
-            List<Future<Integer>> futures = es.invokeAll(makeCallables(atomicInt));
+            List<Future<Integer>> futures = es.invokeAll(generateCallables(atomicInt));
         } catch (InterruptedException e) {}
         es.shutdown();
 
@@ -62,7 +62,7 @@ class Main {
         System.out.println("CompletableFuture::runAsync " + atomicInt.get());
     }
 
-    private static List<Callable<Integer>> makeCallables(AtomicInteger atomicInt) {
+    private static List<Callable<Integer>> generateCallables(AtomicInteger atomicInt) {
         Callable<Integer> addTask = () -> atomicInt.updateAndGet(n -> n + 2);
         List<Callable<Integer>> tasks =  Collections.nCopies(1000, addTask);
         return tasks;
