@@ -5,37 +5,63 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class NoVisibility {
-    private static boolean ready;
-    private static int number;
+    private boolean ready;
+    private int number = 0;
 
-    private static class MyTheead extends Thread {
+    private class MyThread extends Thread {
         public void run() {
             while (!ready)
                 Thread.yield();
-            System.out.println(number);
+
+            // synchronized (NoVisibility.this) {
+            System.out.println(Thread.currentThread().getName() + " reading " + number);
+
+            if(number == 0) {
+                System.err.println(number);
+            }
+            // }
+        }
+    }
+
+    public NoVisibility() {
+        List<Thread> threads = generateThreads();
+        startAll(threads);
+
+        synchronized (this) {
+            ready = true;
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            System.out.println("==== ready -> true ====");
+            number = 42;
+            System.out.println("==== number -> 42 ====");
         }
     }
 
     public static void main(String[] args) {
-        List<Thread> threads = generateRunnables();
-        startAll(threads);
-
-        ready = true;
-        System.out.println("spacer");
-        System.out.println("spacer");
-        number = 42;
-
-
+        new NoVisibility();
     }
 
-    private static List<Thread> generateRunnables() {
+    private List<Thread> generateThreads() {
 
-        List<Thread> tasks = IntStream.range(1, 100).boxed()
-                .map(i-> new MyTheead()).collect(Collectors.toList());
+        List<Thread> tasks = IntStream.range(0, 10).boxed()
+                .map(i-> new MyThread()).collect(Collectors.toList());
         return tasks;
     }
 
-    private static void startAll(List<Thread> threads) {
+    private void startAll(List<Thread> threads) {
         for (Thread thread : threads) {
             thread.start();
         }
