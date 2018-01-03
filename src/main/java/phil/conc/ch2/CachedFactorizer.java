@@ -11,9 +11,9 @@ import java.math.BigInteger;
 @ThreadSafe
 public class CachedFactorizer implements Servlet {
     @GuardedBy("this")
-    private BigInteger lastNumber;
+    private Integer lastNumber;
     @GuardedBy("this")
-    private BigInteger[] lastFactors;
+    private Integer[] lastFactors;
     @GuardedBy("this")
     private long hits;
     @GuardedBy("this")
@@ -28,8 +28,8 @@ public class CachedFactorizer implements Servlet {
     }
 
     public void service(ServletRequest req, ServletResponse resp) {
-        BigInteger requested = extractFromRequest(req);
-        BigInteger[] factors = null;
+        Integer requested = extractFromRequest(req);
+        Integer[] factors = null;
         synchronized (this) {
             ++hits;
             if (requested.equals(lastNumber)) {
@@ -51,13 +51,5 @@ public class CachedFactorizer implements Servlet {
         return new BigInteger[0];
     }
 
-    private void encodeIntoResponse(ServletResponse resp,
-                                    BigInteger[] factors) {
-
-    }
-
-    private BigInteger extractFromRequest(ServletRequest req) {
-        return null;
-    }
 }
 

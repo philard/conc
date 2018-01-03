@@ -5,7 +5,6 @@ import phil.conc.ch2.stubs.Servlet;
 import phil.conc.ch2.stubs.ServletRequest;
 import phil.conc.ch2.stubs.ServletResponse;
 
-import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 class CountingFactorizer {
@@ -16,31 +15,20 @@ class CountingFactorizer {
 
     @NotThreadSafe
     public class UnsafeCachingFactorizer implements Servlet {
-        private final AtomicReference<BigInteger> lastNumber =
+        private final AtomicReference<Integer> lastNumber =
                 new AtomicReference<>();
-        private final AtomicReference<BigInteger[]> lastFactors =
+        private final AtomicReference<Integer[]> lastFactors =
                 new AtomicReference<>();
         public void service(ServletRequest req, ServletResponse resp) {
-            BigInteger i = extractFromRequest(req);
+            Integer i = extractFromRequest(req);
             if (i.equals(lastNumber.get()))
                 encodeIntoResponse(resp, lastFactors.get());
             else {
-                BigInteger[] factors = factor(i);
+                Integer[] factors = factor(i);
                 lastNumber.set(i);
                 lastFactors.set(factors);
                 encodeIntoResponse(resp, factors);
             }
-        }
-
-        private BigInteger extractFromRequest(ServletRequest req) {
-            return null;
-        }
-
-        private BigInteger[] factor(BigInteger i) {
-            return new BigInteger[0];
-        }
-
-        private void encodeIntoResponse(ServletResponse resp, BigInteger[] bigIntegers) {
         }
     }
 }

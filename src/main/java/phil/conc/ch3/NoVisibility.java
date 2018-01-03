@@ -29,22 +29,7 @@ public class NoVisibility {
 
         synchronized (this) {
             ready = true;
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
-            System.out.println("==== ready -> true ====");
+            for(int i = 0; i < 10; i++) System.out.println("==== ready -> true ====");
             number = 42;
             System.out.println("==== number -> 42 ====");
         }
