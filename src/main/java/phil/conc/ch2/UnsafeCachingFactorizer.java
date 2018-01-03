@@ -15,10 +15,9 @@ class CountingFactorizer {
 
     @NotThreadSafe
     public class UnsafeCachingFactorizer implements Servlet {
-        private final AtomicReference<Integer> lastNumber =
-                new AtomicReference<>();
-        private final AtomicReference<Integer[]> lastFactors =
-                new AtomicReference<>();
+        private final AtomicReference<Integer> lastNumber = new AtomicReference<>();
+        private final AtomicReference<Integer[]> lastFactors = new AtomicReference<>();
+
         public void service(ServletRequest req, ServletResponse resp) {
             Integer i = extractFromRequest(req);
             if (i.equals(lastNumber.get()))

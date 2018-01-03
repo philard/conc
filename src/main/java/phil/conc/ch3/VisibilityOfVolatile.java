@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Volatile {
+public class VisibilityOfVolatile {
     private volatile boolean  ready;
     private volatile int number = 0;
 
@@ -21,7 +21,7 @@ public class Volatile {
         }
     }
 
-    public Volatile() {
+    public VisibilityOfVolatile() {
         List<Thread> threads = generateThreads();
         startAll(threads);
 
@@ -35,7 +35,7 @@ public class Volatile {
     }
 
     public static void main(String[] args) {
-        new Volatile();
+        new VisibilityOfVolatile();
     }
 
     private List<Thread> generateThreads() {
