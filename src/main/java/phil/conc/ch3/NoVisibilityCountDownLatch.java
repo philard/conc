@@ -28,7 +28,7 @@ public class NoVisibilityCountDownLatch {
         }
     }
 
-    public NoVisibilityCountDownLatch() {
+    private NoVisibilityCountDownLatch() {
         List<Thread> threads = generateThreads();
         startAll(threads);
         synchronized (this) {
@@ -44,9 +44,8 @@ public class NoVisibilityCountDownLatch {
 
     private List<Thread> generateThreads() {
 
-        List<Thread> tasks = IntStream.range(0, 10).boxed()
+        return IntStream.range(0, 10).boxed()
                 .map(i -> new MyThread()).collect(Collectors.toList());
-        return tasks;
     }
 
     private void startAll(List<Thread> threads) {

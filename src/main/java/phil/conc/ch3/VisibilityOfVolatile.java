@@ -21,7 +21,7 @@ public class VisibilityOfVolatile {
         }
     }
 
-    public VisibilityOfVolatile() {
+    private VisibilityOfVolatile() {
         List<Thread> threads = generateThreads();
         startAll(threads);
 
@@ -40,9 +40,8 @@ public class VisibilityOfVolatile {
 
     private List<Thread> generateThreads() {
 
-        List<Thread> tasks = IntStream.range(0, 10).boxed()
+        return IntStream.range(0, 10).boxed()
                 .map(i-> new MyThread()).collect(Collectors.toList());
-        return tasks;
     }
 
     private void startAll(List<Thread> threads) {
