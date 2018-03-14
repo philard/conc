@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<employees>
+	<employee id="1">
+		<name>J&hi;</name>
+		<age>34</age>
+	</employee>
+</employees>
