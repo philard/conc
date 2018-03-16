@@ -5,7 +5,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileInputStream;
@@ -14,6 +13,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.stream.*;
 
 public class StaxXMLReader {
 
@@ -31,12 +34,56 @@ public class StaxXMLReader {
         try {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(source);
-            while (xmlEventReader.hasNext()){
-                makeNextEmployee(xmlEventReader).ifPresent(empList::add);
-            }
+
+//            final Spliterator<XMLEvent> spliterator = Spliterators.spliteratorUnknownSize(xmlEventReader, Spliterator.ORDERED);
+//            final Stream<XMLEvent> stream = StreamSupport.stream(spliterator, false);
+
+            final Spliterator<XMLEvent> spliterator1 = ((Iterable<XMLEvent>) () -> xmlEventReader).spliterator();
+            final Stream<XMLEvent> stream1 = StreamSupport.stream(spliterator1, false);
+
+
+            BinaryOperator<XMLEvent> lam = (b, y) -> y;
+
+            List<List<XMLEvent>> list = stream1
+                    .collect(unorderedBatches(3, Collectors.toList()));
+            list.forEach(System.out::println);
+
+
+//            while (xmlEventReader.hasNext()){
+//                makeNextEmployee(xmlEventReader).ifPresent(empList::add);
+//            }
         } catch (XMLStreamException e) { e.printStackTrace(); }
         return empList;
     }
+
+
+    public static <T, A, R> Collector<T, ?, R> unorderedBatches(
+            int batchSize,
+            Collector<List<T>, A, R> downstream) {
+        class Acc {
+            List<T> cur = new ArrayList<>();
+            A acc = downstream.supplier().get();
+        }
+        BiConsumer<Acc, T> accumulator = (acc, t) -> {
+            acc.cur.add(t);
+            if(acc.cur.size() == batchSize) {
+                downstream.accumulator().accept(acc.acc, acc.cur);
+                acc.cur = new ArrayList<>();
+            }
+        };
+        return Collector.of(Acc::new, accumulator,
+                (acc1, acc2) -> {
+                    acc1.acc = downstream.combiner().apply(acc1.acc, acc2.acc);
+                    for(T t : acc2.cur) accumulator.accept(acc1, t);
+                    return acc1;
+                }, acc -> {
+                    if(!acc.cur.isEmpty())
+                        downstream.accumulator().accept(acc.acc, acc.cur);
+                    return downstream.finisher().apply(acc.acc);
+                }, Collector.Characteristics.UNORDERED);
+    }
+
+
 
     private static Optional<Employee> makeNextEmployee(XMLEventReader xmlEventReader)
             throws XMLStreamException
@@ -65,18 +112,15 @@ public class StaxXMLReader {
                     event = xmlEventReader.nextEvent();
                     emp.setRole(event.asCharacters().getData());
                 }
-            } else if (event.isEndElement()) {
-                EndElement endElement = event.asEndElement();
-                if (elementIs(endElement, "Employee")) {
-                    return Optional.of(emp);
-                }
+            } else if (event.isEndElement() && eventIsEmployee(event)) {
+                return Optional.of(emp);
             }
         }
         return Optional.empty();
     }
 
-    private static boolean elementIs(EndElement startElement, String employee) {
-        return startElement.getName().getLocalPart().equals(employee);
+    private static boolean eventIsEmployee(XMLEvent event) {
+        return event.asEndElement().getName().getLocalPart().equals("Employee");
     }
     private static boolean elementIs(StartElement startElement, String employee) {
         return startElement.getName().getLocalPart().equals(employee);
